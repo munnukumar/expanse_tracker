@@ -7,16 +7,23 @@
     <title>Expense Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
+
+
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </head>
 
 <body style="background-color : black">
-    <h1 class="text-center " style="color:red">Expense Tracker</h1>
-    <hr style="color:red; height:10px; background-color:rgb(7, 248, 216)">
+    <a style=" margin-left: 96%;text-decoration: none; color:rgb(0, 238, 255)" href="login.html" >logout</a>
+
+    <h1 class="text-center " style="color:rgb(207, 126, 5); box-shadow: -1px 9px 18px 0px whitesmoke; margin-left: 30%; margin-right: 30%;">Expense Tracker</h1>
+
+    <!-- <hr style="color:red; height:10px; background-color:rgb(7, 248, 216)"> -->
     <form class="form" style="color:whitesmoke">
-        <div class="row">
+        <div style="background-color:aqua ; color:black; margin-left: 30%; margin-right: 30%;margin-top: 30px; box-shadow: -1px 9px 18px 0px whitesmoke" class="row">
             <div class="col-12 m-2">
                 <label class="col-form-label" for="amount">Expense-Amount:</label>
                 <input type="number" class="form-control" name="amount" required="true" id="amount" placeholder="Enter Expense Amount">
@@ -40,10 +47,14 @@
             </div>
             <ul class="list-group m-2">
             </ul>
-        </div>
+        </div>  
     </form>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
-<script src="expense.js"></script>
+<script src="public/js/expense.js"></script>
+
+
+<nav class="navbar">
+    
+</nav>
 
 </html>

@@ -8,8 +8,11 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const expanseRoute = require("./routes/expense");
+const userRoute = require("./routes/user");
 
 app.use('/expense', expanseRoute);
+app.use('/user', userRoute);
+
 
 const PORT = 3000;
 sequelize

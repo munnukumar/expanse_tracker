@@ -15,6 +15,7 @@ form.addEventListener("submit", (e) => {
     };
     axios.post("http://localhost:3000/expense/add", expenseDetails)
         .then(res => {
+            console.log("cvbnbffffffff", res)
             const id = res.data.id;
             const li = document.createElement("li");
             li.id = id;
