@@ -10,7 +10,7 @@ form.addEventListener('submit', (e) => {
     }
     axios.post("http://localhost:3000/user/signup", signup)
         .then(result => {
-            alert(result.data.message);
+            alert("user signup successfully");
             window.location.href = "login.html"
             // window.location.reload();
         })

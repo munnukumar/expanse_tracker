@@ -4,14 +4,16 @@ exports.addExpense = async(req, res, next) =>{
     const amount = req.body.amount;
     const itemName = req.body.itemName;
     const category = req.body.category;
+    const id = req.user.id;
 
     await Expense.create({
         amount:amount,
         itemName:itemName,
-        category:category
+        category:category,
+        userId: id
     })
     .then(result =>{
-        console.log("Added Successfully");
+       return res.status(200).json(result)
     })
     .catch(err =>{
         console.log(err);
@@ -19,7 +21,8 @@ exports.addExpense = async(req, res, next) =>{
 }
 
 exports.getExpense = async(req, res, next) =>{
-    await Expense.findAll()
+    const id = req.user.id;
+    await Expense.findAll({where:{userId:id}})
     .then(expense =>{
         res.json(expense);
     })
@@ -30,7 +33,8 @@ exports.getExpense = async(req, res, next) =>{
 
 exports.deleteExpense = (req, res, next) =>{
     const expenseId = req.params.id;
-    Expense.destroy({where:{id:expenseId}})
+    const userId = req.user.id;
+    Expense.destroy({where:{id:expenseId, userId:userId}})
     .then((result) =>{
         res.json(result);
         console.log("Expense is deleted!!")
