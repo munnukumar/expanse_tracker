@@ -1,7 +1,6 @@
 const form = document.querySelector("form");
 const ul = document.querySelector("ul");
 const token = localStorage.getItem("token");
-console.log("^^^^^", token)
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     const amount = e.target.amount.value;
@@ -39,14 +38,16 @@ form.addEventListener("submit", (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("@@@@@", token)
     axios.get("http://localhost:3000/expense/getExpense",{
-
-        headers:{"Authorization" : token}
-        
+        headers:{"Authorization" : token}     
     })
         .then(result => {
-            result.data.forEach(expense => {
+            console.log("*****",result.data)
+            const premium = result.data.premium;
+            if (premium) {
+                document.getElementById("buy-premium").style.display = "none";
+            }
+            result.data.expense.forEach(expense => {
                 const amount = expense.amount;
                 const itemName = expense.itemName;
                 const category = expense.category;
@@ -88,3 +89,31 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => console.log(err))
 });
+
+document.getElementById('buy-premium').addEventListener('click', async (e) => {
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } })
+    console.log(response);
+    var options = {
+        "key": response.data.key_id,
+        "order_id": response.data.order.id,
+        "handler": async function (response) {
+            await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+            }, { headers: { "Authorization": token } })
+
+            alert("You are a Premium User Now");
+            window.location.reload();
+        }
+    }
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+    rzp1.on('payment.failed', async function (response) {
+        await axios.post("http://localhost:3000/purchase/failedtransactionstatus", {
+            order_id: options.order_id,
+            payment_id: response.razorpay_payment_id,
+        }, { headers: { "Authorization": token } })
+        alert(response.error.description);
+    });
+})

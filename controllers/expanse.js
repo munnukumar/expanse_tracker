@@ -22,9 +22,13 @@ exports.addExpense = async(req, res, next) =>{
 
 exports.getExpense = async(req, res, next) =>{
     const id = req.user.id;
+    const premium = req.user.ispremiumuser;
     await Expense.findAll({where:{userId:id}})
     .then(expense =>{
-        res.json(expense);
+        return res.status(200).json({
+            expense:expense,
+            premium:premium
+        });
     })
     .catch(err =>{
         console.log(err);

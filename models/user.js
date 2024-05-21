@@ -25,6 +25,10 @@ const User = sequelize.define('user', {
     mobile_No :{
         type: dataType.INTEGER,
         allowNull: false
+    },
+    ispremiumuser: {
+        type: dataType.BOOLEAN,
+        defaultValue: false
     }
 
 });
