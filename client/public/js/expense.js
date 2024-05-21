@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers:{"Authorization" : token}     
     })
         .then(result => {
+            console.log("=====>", result.data)
             const premium = result.data.premium;
             if (premium) {
                 const premium = document.getElementById('premium');
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                     .catch(err => console.log(err));
             }
-            result.data.expense.forEach(expense => {
+            result.data.expenses.forEach(expense => {
                 const amount = expense.amount;
                 const itemName = expense.itemName;
                 const category = expense.category;
