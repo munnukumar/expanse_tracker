@@ -1,0 +1,16 @@
+#premium {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin: 25px;
+    box-shadow: -1px 9px 18px 0px whitesmoke ;
+}
+
+.modal-content {
+    color:rgb(128, 117, 2);
+    background-color: rgb(4, 249, 171);
+    box-shadow: -1px 9px 18px 0px rgb(253, 220, 6) ;
+    margin-top: 30%;
+
+
+}
