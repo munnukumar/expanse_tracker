@@ -4,19 +4,30 @@ const Expense = require('../models/expanse');
 
 exports.getLeaderboard = async (req, res) => {
     try {
+
+        //This is the third way to find user name and total expanse of each users 
         const leaderboard = await User.findAll({
+            attributes: ['name', 'totalexpense'],
+            order: [['totalexpense', 'DESC']]
+        });
+
+
+        //This is the Second way to join and group by to user name and total expanse of each users
+        /*const leaderboard = await User.findAll({
             attributes: ['name', [sequelize.fn('sum', sequelize.col('expanses.amount')), 'Total_Expenses']],
             include: [{ model: Expense, attributes: [] }],
             group: ['user.id'],
             order: [['Total_Expenses', 'DESC']]
-        });
+        });*/
 
-        // const leaderboard = await sequelize.query(
-        //     `SELECT users.name, SUM(expanses.amount) AS Total_Expenses
-        //      FROM users
-        //      INNER JOIN expanses ON users.id = expanses.userId
-        //      GROUP BY expanses.userId`
-        // );
+
+        //This is the first way to join and group by to user name and total expanse of each users
+        /*const leaderboard = await sequelize.query(
+            `SELECT users.name, SUM(expanses.amount) AS Total_Expenses
+             FROM users
+             INNER JOIN expanses ON users.id = expanses.userId
+             GROUP BY expanses.userId`
+        );*/
         res.status(200).json(leaderboard);
     } catch (err) {
         console.error('Error fetching leaderboard:', err);

@@ -1,10 +1,17 @@
 const Expense = require("../models/expanse")
+const User = require("../models/user");
+const sequelize = require("../utils/database");
 
 exports.addExpense = async(req, res, next) =>{
     const amount = req.body.amount;
     const itemName = req.body.itemName;
     const category = req.body.category;
     const id = req.user.id;
+
+    await User.update(
+        { totalexpense: sequelize.literal(`totalexpense + ${amount}`) },
+        { where: { id: id } }
+    );
 
     await Expense.create({
         amount:amount,
