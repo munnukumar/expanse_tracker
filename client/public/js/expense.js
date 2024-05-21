@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 axios.get("http://localhost:3000/premium/leaderboard", { headers: { "Authorization": token } })
                     .then(result => {
                         console.log("====>", result.data)
-                        result.data[0].forEach(user => {
+                        result.data.forEach(user => {
                             const li = document.createElement("li");
                             li.innerText = `${user.name} - ${user.Total_Expenses}`;
                             leaderboardItem.appendChild(li);
@@ -129,3 +129,7 @@ document.getElementById('buy-premium').addEventListener('click', async (e) => {
         alert(response.error.description);
     });
 })
+
+function modalClose() {
+    window.location.reload();
+}
