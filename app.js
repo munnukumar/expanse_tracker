@@ -12,6 +12,7 @@ const expanseRoute = require("./routes/expense");
 const userRoute = require("./routes/user");
 const purchaseRoute = require("./routes/purchase");
 const premiumRoute = require("./routes/premium");
+const passwordRoute = require("./routes/password");
 
 const app = express();
 app.use(bodyParser.json());
@@ -22,6 +23,7 @@ app.use('/expense', expanseRoute);
 app.use('/user', userRoute);
 app.use('/purchase', purchaseRoute);
 app.use('/premium', premiumRoute);
+app.use('/password', passwordRoute);
 
 Expense.belongsTo(User);
 User.hasMany(Expense);

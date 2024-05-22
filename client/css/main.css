@@ -14,3 +14,12 @@
 
 
 }
+
+
+#forget {
+    color: white;
+}
+
+#forget:hover {
+    color: #ffc107;
+}
