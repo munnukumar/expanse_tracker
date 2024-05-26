@@ -71,6 +71,55 @@
             </div>
         </div>
     </div>
+
+    <!-- Generate Report -->
+    <div style="background-color: black;" class="modal fade" id="report" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div  class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 style="color : red; margin-left: 30%; " class="modal-title" id="reportModalLabel">Day to Day Expenses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="onModalClose()"
+                        aria-label="Close"></button>
+                </div>
+                <div style="color: rgb(180, 6, 6);" class="modal-body report-body">
+                    <h4 id="current-year">2024</h4>
+                    <br>
+                    <h5 id="current-month">May</h5>
+                    <table id="monthly-expense">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Income</th>
+                            <th>Expense</th>
+                        </tr>
+                        <tr>
+                            <td colspan="5">No Data Available!</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <h5>Yearly Report</h5>
+                    <table id="yearly-expense">
+                        <tr>
+                            <th>Month</th>
+                            <th>Income</th>
+                            <th>Expense</th>
+                            <th>Savings</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4">No Data Available!</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <button class="btn btn-success" type="button" name="downloadReport" id="downloadReport">Download
+                        Report</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="onModalClose()"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

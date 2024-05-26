@@ -21,5 +21,30 @@
 }
 
 #forget:hover {
-    color: #ffc107;
+    color: #ff4107;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td,
+th {
+    border: 1px solid black;
+    padding: 8px;
+}
+
+.report-body {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+table {
+    width: -webkit-fill-available;
+    text-align: center;
+}
+
+th {
+    background-color: #f48d06;
 }
