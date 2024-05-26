@@ -23,21 +23,6 @@ exports.sendForgotPassword = async (req, res) => {
 
 
         const transporter = nodemailer.createTransport({
-            // host: 'smtp.gmail.com',
-            // port: 465,
-            // secure: true,
-            // // debug: true,
-            // // secureConnection: false,
-            // auth: {
-            //     user: 'rvsinghg8@gmail.com',
-            //     pass: 'gdxonelldamwnnyy'
-            // },
-
-            // tls: {
-            //     rejectUnauthorized:true
-            // }
-
-
             host: 'smtp-relay.brevo.com',
             port: 587,
             secure: false,
@@ -46,7 +31,7 @@ exports.sendForgotPassword = async (req, res) => {
             secureConnection:false,
             auth: {
                 user: '753cdb001@smtp-brevo.com',
-                pass: 'xsmtpsib-9471fb21ea5750dc008c0b5552093e9470db4e470959e16e83b4ae770a027051-50XSxV9RMQbKUzFc'
+                pass: process.env.SMTP_PASSWORD
             },
             tls: {
                 rejectUnauthorized:true
