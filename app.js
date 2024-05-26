@@ -7,6 +7,7 @@ const sequelize = require("./utils/database.js");
 const Order = require("./models/order");
 const User = require("./models/user")
 const Expense = require("./models/expanse")
+const ForgotPasswordRequests = require("./models/forgotPassword")
 
 const expanseRoute = require("./routes/expense");
 const userRoute = require("./routes/user");
@@ -18,6 +19,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 dotenv.config();
+app.use(express.static("public"));
 
 app.use('/expense', expanseRoute);
 app.use('/user', userRoute);
@@ -30,6 +32,9 @@ User.hasMany(Expense);
 
 Order.belongsTo(User);
 User.hasMany(Order);
+
+User.hasMany(ForgotPasswordRequests);
+ForgotPasswordRequests.belongsTo(User);
 
 
 const PORT = 3000;
