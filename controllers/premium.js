@@ -72,7 +72,6 @@ exports.generateReport = async (req, res) => {
             where: { userId: id, updatedAt: Sequelize.literal(`YEAR(updatedAt)=${currentYear}`) },
             group: [Sequelize.literal('MONTH(updatedAt)')]
         });
-
         const p3 = req.user.getReports({ order: [["updatedAt", "DESC"]], limit: 20 });
         const [expensesMonthly, expensesYearly, allReports] = await Promise.all([p1, p2, p3]);
         let monthly = {};
@@ -140,11 +139,7 @@ function uploadToS3(data, fileName) {
 
 exports.downloadReport = async (req, res, next) => {
     const premium = req.user.ispremiumuser;
-    const expanse = req.user;
-
-    console.log("%%%%", expanse)
     const t = await sequelize.transaction();
-    // console.log("@@@@@@", req.user.getExpenses())
     try {
         if (!premium) {
             return res.status(401).json({ error: 'You are not a premium user. Access to the report generation is restricted.' });
@@ -152,9 +147,7 @@ exports.downloadReport = async (req, res, next) => {
         const expenses = await req.user
         const stringifiedExpenses = JSON.stringify(expenses);
         const fileName = `Expense${req.user.id}/${new Date()}.txt`;
-        console.log("111111", fileName)
         const fileUrl = await uploadToS3(stringifiedExpenses, fileName);
-        console.log("22222", fileUrl)
         await Report.create({ url: fileUrl, userId: req.user.id }, { transaction: t });
         await t.commit();
         res.status(200).json({ fileUrl });

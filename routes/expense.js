@@ -4,8 +4,8 @@ const authenticate = require("../middlewares/auth")
 
 const router = express.Router();
 
-router.post('/add',authenticate, expenseController.addExpense);
+router.post('/add-expense',authenticate, expenseController.addExpense);
 router.get('/getExpensePerPage', authenticate, expenseController.getExpense);
-router.delete('/delete/:id',authenticate, expenseController.deleteExpense);
+router.delete('/delete-expense/:id',authenticate, expenseController.deleteExpense);
 
 module.exports = router;
