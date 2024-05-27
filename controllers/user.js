@@ -14,7 +14,7 @@ exports.signup = async(req, res) =>{
         const saltRound = 10;
         const hash = await bcrypt.hash(password, saltRound);
 
-        const user = await User.create({
+        await User.create({
             name : name,
             email: email,
             password: hash,
@@ -22,7 +22,9 @@ exports.signup = async(req, res) =>{
             transaction: t
         })
         await t.commit();
-        return res.status(200).json(user);
+        return res.status(200).json({
+            message:'user is created successfully'
+        });
     }
     catch (error) {
         await t.rollback();
@@ -33,14 +35,14 @@ exports.signup = async(req, res) =>{
 exports.login = async(req, res) =>{
     try {
         const {email, password} = req.body;
-        const findUser = await User.findOne({where: {email:email}});
-        if(!findUser){
+        const user = await User.findOne({where: {email:email}});
+        if(!user){
             return res.status(400).json({
                 message: 'user not found'
             });
         }
 
-        const comparePassword = await bcrypt.compare(password, findUser.password);
+        const comparePassword = await bcrypt.compare(password, user.password);
         if(!comparePassword){
             return res.status(404).json({
                 message: 'email or password are wrong'
@@ -48,7 +50,7 @@ exports.login = async(req, res) =>{
         }
         res.status(200).json({
             message:'user login successfully',
-            token: generateAccessToken(findUser.id, findUser.name)
+            token: generateAccessToken(user.id, user.name, user.ispremiumuser)
         });
     }
 

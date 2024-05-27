@@ -8,6 +8,7 @@ const Order = require("./models/order");
 const User = require("./models/user")
 const Expense = require("./models/expanse")
 const ForgotPasswordRequests = require("./models/forgotPassword")
+const Report = require("./models/report");
 
 const expanseRoute = require("./routes/expense");
 const userRoute = require("./routes/user");
@@ -35,6 +36,9 @@ User.hasMany(Order);
 
 User.hasMany(ForgotPasswordRequests);
 ForgotPasswordRequests.belongsTo(User);
+
+User.hasMany(Report);
+Report.belongsTo(User);
 
 
 const PORT = 3000;

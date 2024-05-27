@@ -10,9 +10,15 @@ const expanse = sequelize.define('expanse',{
         primaryKey: true
     },
 
-    amount:{
+    expense:{
         type: Sequelize.INTEGER,
-        allowNull:false
+        allowNull:false,
+        defaultValue: 0
+    },
+    income: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
     },
     itemName: {
         type: Sequelize.STRING

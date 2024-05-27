@@ -1,8 +1,12 @@
 const form = document.querySelector("form");
 const ul = document.querySelector("ul");
+const record = document.querySelector("#all-record");
+const downloadReport = document.getElementById("downloadReport");
 const token = localStorage.getItem("token");
+
 form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const btn = e.submitter.value;
     const amount = e.target.amount.value;
     const itemName = e.target.itemName.value;
     const category = e.target.category.value;
@@ -10,29 +14,41 @@ form.addEventListener("submit", (e) => {
         alert("choose category")
         return;
     }
-    const expenseDetails = {
-        amount: amount,
-        itemName: itemName,
-        category: category
-    };
+    let expenseDetails = {}
+    if (btn == "income") {
+        expenseDetails = {
+            income: amount,
+            itemName: itemName,
+            category: category
+        };
+    }
+    else {
+        expenseDetails = {
+            expense: amount,
+            itemName: itemName,
+            category: category
+        };
+    }
     axios.post("http://localhost:3000/expense/add", 
         expenseDetails,
         {headers: {"Authorization": token}},
     )
         .then(res => {
-            const id = res.data.id;
-            const li = document.createElement("li");
-            li.id = id;
-            const buttonHTML = `
-                <button type="button" class="btn btn-success edit-btn" style="margin-left:auto; margin-right:5px;">Edit</button>
-                <button type="button" class="btn btn-danger delete-btn">Delete</button>
-                `;
-            li.innerHTML = `${amount}-${itemName}-${category} ${buttonHTML}`;
-            li.classList.add("list-group-item");
-            li.classList.add("d-flex")
-            li.classList.add("justify-content-between")
-            li.classList.add("align-items-center")
-            ul.appendChild(li);
+            // const id = res.data.id;
+            // const li = document.createElement("li");
+            // li.id = id;
+            // const buttonHTML = `
+            //     <button type="button" class="btn btn-success edit-btn" style="margin-left:auto; margin-right:5px;">Edit</button>
+            //     <button type="button" class="btn btn-danger delete-btn">Delete</button>
+            //     `;
+            // li.innerHTML = `${amount}-${itemName}-${category} ${buttonHTML}`;
+            // li.classList.add("list-group-item");
+            // li.classList.add("d-flex")
+            // li.classList.add("justify-content-between")
+            // li.classList.add("align-items-center")
+            // ul.appendChild(li);
+
+            window.location.reload();
         })
         .catch(err => console.log(err))
 });
@@ -47,12 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const premium = document.getElementById('premium');
                 premium.innerHTML = `<h4>You are a premium user</h4>
                                     <button type="button" class="btn btn-warning add" name="show-leaderboard" id="show-leaderboard" data-bs-toggle="modal" data-bs-target="#leaderboard">Show Leaderboard</button>
-                                    <button type="button" class="btn btn-success" name="generate-report" id="generate-report" data-bs-toggle="modal" data-bs-target="#report">Generate Report</button>`
+                                    <button type="button" class="btn btn-success" name="generate-report" id="generate-report" data-bs-toggle="modal" data-bs-target="#report">Generate Report</button>
+                                    <button type="button" class="btn btn-info" name="show-report" id="show-report" data-bs-toggle="modal" data-bs-target="#showReportModal">Show All Reports</button>`
                 premium.style.color = "yellow";
                 const leaderboardItem = document.getElementById("leaderboard-items");
                 axios.get("http://localhost:3000/premium/leaderboard", { headers: { "Authorization": token } })
                     .then(result => {
-                        console.log("====>", result.data)
                         result.data.forEach(user => {
                             const li = document.createElement("li");
                             li.innerText = `${user.name} - ${user.totalexpense}`;
@@ -60,43 +76,125 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     })
                     .catch(err => console.log(err));
+
+                    const monthlyExpense = document.getElementById("monthly-expense");
+                    const yearlyExpense = document.getElementById("yearly-expense");
+                    const allReports = document.getElementById("all-reports");
+                    axios.get("http://localhost:3000/premium/report", { headers: { "Authorization": token } })
+                        .then(result => {
+                            console.log(")))", result)
+                            const monthly = result.data.monthly;
+                            const yearly = result.data.yearly;
+                            const reports = result.data.reports;
+                            if (Object.keys(monthly).length != 0) monthlyExpense.firstElementChild.lastElementChild.remove();
+                            if (Object.keys(yearly).length != 0) yearlyExpense.firstElementChild.lastElementChild.remove();
+                            if (Object.keys(reports).length != 0) allReports.firstElementChild.lastElementChild.remove();
+                            Object.values(monthly).forEach(result => {
+                                const tr = document.createElement("tr");
+                                const td1 = document.createElement("td");
+                                const td2 = document.createElement("td");
+                                const td3 = document.createElement("td");
+                                const td4 = document.createElement("td");
+                                const td5 = document.createElement("td");
+                                td1.innerText = result.date;
+                                td2.innerText = result.itemName;
+                                td3.innerText = result.category;
+                                td4.innerText = result.expense;
+                                td5.innerText = result.income;
+                                tr.appendChild(td1);
+                                tr.appendChild(td2);
+                                tr.appendChild(td3);
+                                tr.appendChild(td4);
+                                tr.appendChild(td5);
+                                monthlyExpense.appendChild(tr);
+                            });
+                            Object.values(yearly).forEach(result => {
+                                const tr = document.createElement("tr");
+                                const td1 = document.createElement("td");
+                                const td2 = document.createElement("td");
+                                const td3 = document.createElement("td");
+                                const td4 = document.createElement("td");
+                                td1.innerText = result.month;
+                                td2.innerText = result.income;
+                                td3.innerText = result.expense;
+                                td4.innerText = result.savings;
+                                tr.appendChild(td1);
+                                tr.appendChild(td2);
+                                tr.appendChild(td3);
+                                tr.appendChild(td4);
+                                yearlyExpense.appendChild(tr);
+                            });
+                            Object.values(reports).forEach(result => {
+                                const tr = document.createElement("tr");
+                                const td1 = document.createElement("td");
+                                const td2 = document.createElement("td");
+                                td1.innerText = result.date;
+                                td2.innerHTML = `<a href="${result.url}">${result.url}</a>`;
+                                tr.appendChild(td1);
+                                tr.appendChild(td2);
+                                allReports.appendChild(tr);
+                            });
+                        })
+                        .catch(err => console.log(err));
             }
-            result.data.expenses.forEach(expense => {
-                const amount = expense.amount;
-                const itemName = expense.itemName;
-                const category = expense.category;
-                const li = document.createElement("li");
-                li.id = expense.id;
+            if (result.data.expenses.length != 0){
+                record.firstElementChild.lastElementChild.remove();
+            }
+            result.data.expenses.forEach(res => {
+                const expense = res.expense;
+                const income = res.income;
+                const itemName = res.itemName;
+                const category = res.category;
                 const buttonHTML = `
                 <button type="button" class="btn btn-success edit-btn" style="margin-left:auto; margin-right:5px;">Edit</button>
                 <button type="button" class="btn btn-danger delete-btn">Delete</button>
                 `;
-                li.innerHTML = `${amount} - ${itemName} - ${category} ${buttonHTML}`;
-                li.classList.add("list-group-item");
-                li.classList.add("d-flex")
-                li.classList.add("justify-content-between")
-                li.classList.add("align-items-center")
-                ul.appendChild(li);
-                const editBtn = li.querySelector(".edit-btn");
-                const deleteBtn = li.querySelector(".delete-btn");
+                const tr = document.createElement("tr");
+                tr.id = res.id;
+                const td1 = document.createElement("td");
+                const td2 = document.createElement("td");
+                const td3 = document.createElement("td");
+                const td4 = document.createElement("td");
+                const td5 = document.createElement("td");
+                td1.innerText = income;
+                td1.classList.add("income");
+                td2.innerText = expense;
+                td2.classList.add("expense");
+                td3.innerText = itemName;
+                td4.innerText = category;
+                td5.innerHTML = buttonHTML;
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+                tr.appendChild(td5);
+                record.appendChild(tr)
+                const editBtn = tr.querySelector(".edit-btn");
+                const deleteBtn = tr.querySelector(".delete-btn");
                 editBtn.addEventListener("click", () => {
-                    axios.delete(`http://localhost:3000/expense/delete/${editBtn.parentElement.id}`,{
+                    axios.delete(`http://localhost:3000/expense/delete/${editBtn.parentElement.parentElement.id}`,{
                         headers :{"Authorization":token}
                     })
                         .then(res => {
-                            document.getElementById('amount').value = amount;
+                            if (expense >= income) {
+                                document.getElementById('amount').value = expense;
+                            }
+                            else {
+                                document.getElementById('amount').value = income;
+                            }
                             document.getElementById('itemName').value = itemName;
                             document.getElementById('category').value = category;
-                            editBtn.parentElement.remove();
+                            editBtn.parentElement.parentElement.remove();
                         }).catch(err => console.log(err));
                 })
                 deleteBtn.addEventListener("click", () => {
-                    axios.delete(`http://localhost:3000/expense/delete/${deleteBtn.parentElement.id}`,{
+                    axios.delete(`http://localhost:3000/expense/delete/${deleteBtn.parentElement.parentElement.id}`,{
                         headers :{"Authorization":token}
 
                     })
                         .then(res => {
-                            deleteBtn.parentElement.remove();
+                            // deleteBtn.parentElement.remove();
+                            window.location.reload();
                         }).catch(err => console.log(err));
                 });
             });
@@ -135,3 +233,15 @@ document.getElementById('buy-premium').addEventListener('click', async (e) => {
 function modalClose() {
     window.location.reload();
 }
+
+downloadReport.addEventListener("click", () => {
+    axios.get("http://localhost:3000/premium/download-report", { headers: { "Authorization": token } })
+        .then(result => {
+            console.log("(((((", result)
+            const a = document.createElement("a");
+            a.href = result.data.fileUrl;
+            a.download = "report.txt";
+            a.click();
+        })
+        .catch(err => console.log(err));
+})
