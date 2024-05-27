@@ -34,27 +34,14 @@ form.addEventListener("submit", (e) => {
         {headers: {"Authorization": token}},
     )
         .then(res => {
-            // const id = res.data.id;
-            // const li = document.createElement("li");
-            // li.id = id;
-            // const buttonHTML = `
-            //     <button type="button" class="btn btn-success edit-btn" style="margin-left:auto; margin-right:5px;">Edit</button>
-            //     <button type="button" class="btn btn-danger delete-btn">Delete</button>
-            //     `;
-            // li.innerHTML = `${amount}-${itemName}-${category} ${buttonHTML}`;
-            // li.classList.add("list-group-item");
-            // li.classList.add("d-flex")
-            // li.classList.add("justify-content-between")
-            // li.classList.add("align-items-center")
-            // ul.appendChild(li);
-
             window.location.reload();
         })
         .catch(err => console.log(err))
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    axios.get("http://localhost:3000/expense/getExpense",{
+    const page1 = document.getElementById('page-1');
+    axios.get(`http://localhost:3000/expense/getExpensePerPage`,{
         headers:{"Authorization" : token}     
     })
         .then(result => {

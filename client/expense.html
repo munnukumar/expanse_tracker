@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body style="background-color : black">
+<body style="background-color: black ;" >
     <a style=" margin-left: 96%;text-decoration: none; color:rgb(0, 238, 255)" href="login.html" >logout</a>
 
     <h1 class="text-center " style="color:rgb(207, 126, 5); box-shadow: -1px 9px 18px 0px whitesmoke; margin-left: 30%; margin-right: 30%;">Expense Tracker</h1>
@@ -68,6 +68,23 @@
             </table>
         </div>  
     </form>
+
+     <!-- Pagination -->
+     <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link first" href="#">1</a></li>
+            <li class="page-item active">
+                <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item"><a class="page-link last" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
 
     <div class="modal fade" id="leaderboard" tabindex="-1" aria-labelledby="leaderboardModalLabel" aria-hidden="true">
         <div class="modal-dialog">
