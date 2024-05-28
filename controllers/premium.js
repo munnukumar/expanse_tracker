@@ -5,6 +5,7 @@ const sequelize = require('../utils/database');
 const User = require('../models/user');
 const Expense = require('../models/expanse');
 const Report = require('../models/report');
+const { where } = require('sequelize');
 
 exports.getLeaderboard = async (req, res) => {
     const premium = req.user.ispremiumuser;
@@ -43,6 +44,9 @@ exports.getLeaderboard = async (req, res) => {
     }
 };
 
+let expensesMonthly;
+let expensesYearly
+let allReports
 
 exports.generateReport = async (req, res) => {
     const premium = req.user.ispremiumuser;
@@ -73,7 +77,7 @@ exports.generateReport = async (req, res) => {
             group: [Sequelize.literal('MONTH(updatedAt)')]
         });
         const p3 = req.user.getReports({ order: [["updatedAt", "DESC"]], limit: 20 });
-        const [expensesMonthly, expensesYearly, allReports] = await Promise.all([p1, p2, p3]);
+        [expensesMonthly, expensesYearly, allReports] = await Promise.all([p1, p2, p3]);
         let monthly = {};
         let yearly = {};
         let reports = {};
@@ -112,11 +116,14 @@ exports.generateReport = async (req, res) => {
     }
 }
 
+
+
+
 function uploadToS3(data, fileName) {
     const s3 = new AWS.S3({
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-       
+
 
     });
     const params = {
@@ -140,16 +147,71 @@ function uploadToS3(data, fileName) {
 exports.downloadReport = async (req, res, next) => {
     const premium = req.user.ispremiumuser;
     const t = await sequelize.transaction();
+
+    let totalExpense
+    let totalIncome
+    let month
+    expensesYearly.forEach(expanse => {
+        totalExpense = expanse.dataValues;
+        totalIncome = expanse.dataValues;
+        month = expanse.dataValues;
+    })
+    let DownloadData = {
+        expensesMonthly: {
+            date: expensesMonthly[0].updatedAt,
+            income: expensesMonthly[0].income,
+            expense: expensesMonthly[0].expense
+        },
+        expensesYearly: {
+            month: month.month,
+            totalIncome: totalIncome.totalIncome,
+            totalExpense: totalExpense.totalExpense,
+            saving: (totalIncome.totalIncome - totalExpense.totalExpense)
+        }
+
+    }
     try {
         if (!premium) {
             return res.status(401).json({ error: 'You are not a premium user. Access to the report generation is restricted.' });
         }
-        const expenses = await req.user
+        const expenses = DownloadData
         const stringifiedExpenses = JSON.stringify(expenses);
+        console.log("!!!!", stringifiedExpenses)
+
+
+        const data = JSON.parse(stringifiedExpenses);
+
+        // Function to generate plain text content
+        const generateText = (data) => {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthName = monthNames[data.expensesYearly.month - 1];
+
+            return `
+                ${monthName} Month Expenses Report
+                ________________________________________
+                Date    :     ${data.expensesMonthly.date}
+                Income  :     ${data.expensesMonthly.income}
+                Expense :     ${data.expensesMonthly.expense}
+                _________________________________________
+                Yearly Expense Report
+                _________________________________________
+                Month   :    ${monthName}
+                Income  :    ${data.expensesYearly.totalIncome}
+                Expense :    ${data.expensesYearly.totalExpense}
+                Savings :    ${data.expensesYearly.saving}
+                  `;
+        };
+
+        // Generate the text content
+        const textContent = generateText(data);
+
+        console.log("&&&&&", textContent)
+
         const fileName = `Expense${req.user.id}/${new Date()}.txt`;
-        const fileUrl = await uploadToS3(stringifiedExpenses, fileName);
+        const fileUrl = await uploadToS3(textContent, fileName);
         await Report.create({ url: fileUrl, userId: req.user.id }, { transaction: t });
         await t.commit();
+
         res.status(200).json({ fileUrl });
     }
     catch (err) {

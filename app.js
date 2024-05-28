@@ -1,7 +1,14 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require('dotenv')
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 
 const sequelize = require("./utils/database.js");
 const Order = require("./models/order");
@@ -21,6 +28,10 @@ app.use(bodyParser.json());
 app.use(cors());
 dotenv.config();
 app.use(express.static("public"));
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
+
 
 app.use('/expense', expanseRoute);
 app.use('/user', userRoute);
@@ -41,7 +52,7 @@ User.hasMany(Report);
 Report.belongsTo(User);
 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 sequelize
 // .sync({force:true})
 .sync()
