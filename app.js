@@ -1,3 +1,4 @@
+
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -8,7 +9,16 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 
+dotenv.config();
+
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+app.use(express.static("public"));
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 const sequelize = require("./utils/database.js");
 const Order = require("./models/order");
@@ -22,16 +32,6 @@ const userRoute = require("./routes/user");
 const purchaseRoute = require("./routes/purchase");
 const premiumRoute = require("./routes/premium");
 const passwordRoute = require("./routes/password");
-
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-dotenv.config();
-app.use(express.static("public"));
-app.use(helmet());
-app.use(compression());
-app.use(morgan("combined", { stream: accessLogStream }));
-
 
 app.use('/expense', expanseRoute);
 app.use('/user', userRoute);
