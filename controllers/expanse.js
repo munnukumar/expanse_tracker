@@ -39,7 +39,8 @@ exports.addExpense = async (req, res, next) => {
 exports.getExpense = async (req, res, next) => {
     try {
         const ITEMS_PER_PAGE = parseInt(req.query.items_per_page);
-        const page = req.query.page || 1;
+        console.log("######", ITEMS_PER_PAGE)
+        const page = req.query.page || 2;
         const offset = (page - 1) * ITEMS_PER_PAGE;
         const limit = ITEMS_PER_PAGE;
         const id = req.user.id;

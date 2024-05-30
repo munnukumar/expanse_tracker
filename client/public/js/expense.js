@@ -67,7 +67,8 @@ async function handleEditExpense(btn, expense, income, itemName, category) {
     }
 }
 async function handleGetExpense(page) {
-    const itemsPerPage = localStorage.getItem('itemsPerPage') || 2;
+    console.log("&&&&", page)
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || 10;
     const record = document.querySelector("#all-record");
     const paginationItems = document.querySelectorAll('.pagination .page-item a');
     try {
@@ -288,25 +289,34 @@ async function premiumShowAllReports() {
 /* DOM Manipulation */
 /* On Page Reload */
 document.addEventListener('DOMContentLoaded', async () => {
-    const itemsPerPage = localStorage.getItem('itemsPerPage') || 2;
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || 10;
+    console.log("11111", itemsPerPage)
     const recordPerPage = document.querySelectorAll("#records-per-page option");
+    console.log("2222", recordPerPage)
+
     recordPerPage.forEach(item => {
         if (item.value == itemsPerPage) {
+            console.log("33333", item.value)
             item.selected = true;
         }
     });
-    const currentPage = localStorage.getItem('currentPage');
+    const currentPage = localStorage.getItem('currentPage') || 1;
     const pagination = document.querySelector(".pagination");
+    console.log("^^^^^", currentPage)
     handleGetExpense(currentPage);
     handlePageChange();
-    handlePageNavDisable(pagination, currentPage);
     handleRecordPerPage();
+    handlePageNavDisable(pagination, currentPage);
+
+  
+    
 });
 /* Record Per Page */
 function handleRecordPerPage() {
     const recordPerPage = document.querySelector("#records-per-page");
     recordPerPage.addEventListener('change', (e) => {
         const itemsPerPage = e.target.value;
+        console.log("$$$$$", itemsPerPage)
         localStorage.setItem('itemsPerPage', itemsPerPage);
         window.location.reload();
     });
@@ -320,6 +330,7 @@ function handlePageChange() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             let currentPage = localStorage.getItem('currentPage') || 1;
+            console.log("#####", currentPage)
             let pageNumber = parseInt(e.target.innerText);
             if (e.target.innerText == "Next") {
                 pageNumber = parseInt(currentPage) + 1;

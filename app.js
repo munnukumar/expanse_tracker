@@ -1,4 +1,3 @@
-
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -18,7 +17,7 @@ app.use(cors());
 app.use(express.static("public"));
 app.use(helmet());
 app.use(compression());
-app.use(morgan("combined", { stream: accessLogStream }));
+// app.use(morgan("combined", { stream: accessLogStream }));
 
 const sequelize = require("./utils/database.js");
 const Order = require("./models/order");
