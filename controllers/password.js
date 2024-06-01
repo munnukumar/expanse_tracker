@@ -83,6 +83,7 @@ exports.getForgotPassword = async (req, res) => {
 }
 
 exports.newPassword = async (req, res) => {
+    console.log("=====", req.params)
     const t = await sequelize.transaction();
     try {
         const userRequest = await ForgotPasswordRequests.findOne({ where: { id: req.params.uuid } });

@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('resetPasswordForm');
    
@@ -12,9 +13,19 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Both passwords are not matched. Please try again.');
         } else {
             try {
-                await axios.post(window.location.pathname, { password });
-                alert('Password reset successful.');
-                window.location.reload();
+               const response =  await fetch(window.location.pathname, {
+                    method:'POST',
+                    headers:{
+                        'Content-Type' : 'application/json'
+                    },
+
+                    body: JSON.stringify({password}) 
+                });
+                if(response.ok){
+                    alert('Password reset successful.');
+                    window.location.reload();
+
+                }
             }
             catch (err) {
                 console.log(err);
