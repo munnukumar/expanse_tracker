@@ -10,7 +10,7 @@ const authenticate = async (req, res, next) =>{
             })
         }
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-        const user = await User.findByPk(decoded.id);
+        const user = await User.findById(decoded._id);
         if(!user){
             console.log("not user")
             return res.status(400).json({

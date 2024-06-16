@@ -1,11 +1,19 @@
-const dataType = require("sequelize");
+const mongoose = require("mongoose");
 
-const sequelize = require("../utils/database");
+const Schema = mongoose.Schema;
 
-const Order = sequelize.define('order', {
-    paymentId: dataType.STRING,
-    orderId: dataType.STRING,
-    status: dataType.STRING
-})
+const orderSchema = new Schema({
+    paymentId: {
+        type: String
+    },
+    orderId: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true
+    }
+});
 
-module.exports = Order;
+module.exports = mongoose.model("Order", orderSchema);

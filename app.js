@@ -7,6 +7,7 @@ const dotenv = require('dotenv')
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 
 dotenv.config();
 
@@ -19,12 +20,6 @@ app.use(helmet());
 app.use(compression());
 // app.use(morgan("combined", { stream: accessLogStream }));
 
-const sequelize = require("./utils/database.js");
-const Order = require("./models/order");
-const User = require("./models/user")
-const Expense = require("./models/expanse")
-const ForgotPasswordRequests = require("./models/forgotPassword")
-const Report = require("./models/report");
 
 const expanseRoute = require("./routes/expense");
 const userRoute = require("./routes/user");
@@ -38,26 +33,10 @@ app.use('/purchase', purchaseRoute);
 app.use('/premium', premiumRoute);
 app.use('/password', passwordRoute);
 
-Expense.belongsTo(User);
-User.hasMany(Expense);
-
-Order.belongsTo(User);
-User.hasMany(Order);
-
-User.hasMany(ForgotPasswordRequests);
-ForgotPasswordRequests.belongsTo(User);
-
-User.hasMany(Report);
-Report.belongsTo(User);
-
-
-const PORT = process.env.PORT || 3000;
-sequelize
-// .sync({force:true})
-.sync()
+mongoose.connect(process.env.MONGO_URL)
 .then(() =>{
-    app.listen(PORT, ()=>{
-        console.log(`Server is listing on PORT: ${PORT}`)
+    app.listen(process.env.PORT || 3000, ()=>{
+        console.log(`Server is listing on PORT: ${process.env.PORT}`)
     })
 })
 .catch(err =>{

@@ -10,10 +10,7 @@ async function handleAddExpense(e) {
         const btn = e.submitter.value;
         const amount = e.target.amount.value;
         const itemName = e.target.itemName.value;
-        const category = e.target.category.value
-        if(category == ""){
-            return alert("Choose category")
-        }
+        const category = e.target.category.value;
         let expenseDetails = {}
         if (btn == "income") {
             expenseDetails = {
@@ -67,8 +64,7 @@ async function handleEditExpense(btn, expense, income, itemName, category) {
     }
 }
 async function handleGetExpense(page) {
-    console.log("&&&&", page)
-    const itemsPerPage = localStorage.getItem('itemsPerPage') || 10;
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || 2;
     const record = document.querySelector("#all-record");
     const paginationItems = document.querySelectorAll('.pagination .page-item a');
     try {
@@ -98,7 +94,7 @@ async function handleGetExpense(page) {
                 <button type="button" class="btn btn-danger delete-btn">Delete</button>
                 `;
             const tr = document.createElement("tr");
-            tr.id = res.id;
+            tr.id = res._id;
             const td1 = document.createElement("td");
             const td2 = document.createElement("td");
             const td3 = document.createElement("td");
@@ -125,36 +121,44 @@ async function handleGetExpense(page) {
         });
     }
     catch (err) {
-        alert(err.response.data.error + "\nFacing problem in fetching expense");
+        alert("You are not logged in");
+        window.location.href = "login.html";
     }
 }
 
 /* Premium Feature Functions */
 async function buyPremium() {
-    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } })
-    var options = {
-        "key": response.data.key_id,
-        "order_id": response.data.order.id,
-        "handler": async function (response) {
-            await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
-                order_id: options.order_id,
-                payment_id: response.razorpay_payment_id,
-            }, { headers: { "Authorization": token } })
+    try {
+        const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } })
+        console.log("$$$$$$$", response)
+        var options = {
+            "key": response.data.key_id,
+            "_id": response.data.order._id,
+            "orderId": response.data.order.orderId,
+            "handler": async function (response) {
+                await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
+                    _id: options._id,
+                    paymentId: response.razorpay_payment_id,
+                }, { headers: { "Authorization": token } })
 
-            alert("You are a Premium User Now");
-            window.location.reload();
+                alert("You are a Premium User Now");
+                window.location.reload();
+            }
         }
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+        rzp1.on('payment.failed', async function (response) {
+            await axios.post("http://localhost:3000/purchase/failedtransactionstatus", {
+                _id: options._id,
+                paymentId: response.razorpay_payment_id,
+            }, { headers: { "Authorization": token } })
+            alert(response.error.itemName);
+        });
+    } catch (error) {
+        console.error("Error in buyPremium:", error);
     }
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
-    rzp1.on('payment.failed', async function (response) {
-        await axios.post("http://localhost:3000/purchase/failedtransactionstatus", {
-            order_id: options.order_id,
-            payment_id: response.razorpay_payment_id,
-        }, { headers: { "Authorization": token } })
-        alert(response.error.itemName);
-    });
 }
+
 async function premiumFeatures() {
     try {
         const premium = document.getElementById('premium');
@@ -165,7 +169,7 @@ async function premiumFeatures() {
         premium.style.color = "yellow";
     }
     catch (err) {
-        console.log(err);
+        console.error(err);
     }
 }
 async function premiumLeaderboard() {
@@ -175,7 +179,7 @@ async function premiumLeaderboard() {
         const getLeaderboard = await axios.get("http://localhost:3000/premium/leaderboard", { headers: { "Authorization": token } });
         getLeaderboard.data.forEach(user => {
             const li = document.createElement("li");
-            li.innerText = `${user.name} - ${user.totalexpense}`;
+            li.innerText = `${user.name} - ${user.totalExpense}`;
             leaderboardItem.appendChild(li);
         });
     }
@@ -247,7 +251,7 @@ async function premiumDownloadReport() {
                 a.download = "report.txt";
                 a.click();
             })
-            .catch(err => console.log(err));
+            .catch(err => console.error(err));
     }
     catch (err) {
         alert(err.response.data.error + "\nFacing problem in downloading report");
@@ -289,34 +293,25 @@ async function premiumShowAllReports() {
 /* DOM Manipulation */
 /* On Page Reload */
 document.addEventListener('DOMContentLoaded', async () => {
-    const itemsPerPage = localStorage.getItem('itemsPerPage') || 10;
-    console.log("11111", itemsPerPage)
+    const itemsPerPage = localStorage.getItem('itemsPerPage') || 2;
     const recordPerPage = document.querySelectorAll("#records-per-page option");
-    console.log("2222", recordPerPage)
-
     recordPerPage.forEach(item => {
         if (item.value == itemsPerPage) {
-            console.log("33333", item.value)
             item.selected = true;
         }
     });
     const currentPage = localStorage.getItem('currentPage') || 1;
     const pagination = document.querySelector(".pagination");
-    console.log("^^^^^", currentPage)
     handleGetExpense(currentPage);
     handlePageChange();
-    handleRecordPerPage();
     handlePageNavDisable(pagination, currentPage);
-
-  
-    
+    handleRecordPerPage();
 });
 /* Record Per Page */
 function handleRecordPerPage() {
     const recordPerPage = document.querySelector("#records-per-page");
     recordPerPage.addEventListener('change', (e) => {
         const itemsPerPage = e.target.value;
-        console.log("$$$$$", itemsPerPage)
         localStorage.setItem('itemsPerPage', itemsPerPage);
         window.location.reload();
     });
@@ -330,7 +325,6 @@ function handlePageChange() {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             let currentPage = localStorage.getItem('currentPage') || 1;
-            console.log("#####", currentPage)
             let pageNumber = parseInt(e.target.innerText);
             if (e.target.innerText == "Next") {
                 pageNumber = parseInt(currentPage) + 1;
